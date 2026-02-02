@@ -1,0 +1,23 @@
+# ninja log v5
+21	523	7917294517727715	glew-populate-prefix/src/glew-populate-stamp/glew-populate-mkdir	e39e6d47b2400563
+525	10728	7917294619765339	glew-populate-prefix/src/glew-populate-stamp/glew-populate-download	3c6dd1315f613317
+21	523	7917294517727715	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/glew-populate-prefix/src/glew-populate-stamp/glew-populate-mkdir	e39e6d47b2400563
+525	10728	7917294619765339	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/glew-populate-prefix/src/glew-2.2.0.zip	3c6dd1315f613317
+525	10728	7917294619765339	glew-populate-prefix/src/glew-2.2.0.zip	3c6dd1315f613317
+11644	12312	7917294635667201	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/glew-populate-prefix/src/glew-populate-stamp/glew-populate-configure	13beebfac4256772
+525	10728	7917294619765339	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/glew-populate-prefix/src/glew-populate-stamp/glew-populate-download	3c6dd1315f613317
+10729	11129	7917294623794521	glew-populate-prefix/src/glew-populate-stamp/glew-populate-update	85a6f0286f8f511e
+13121	13849	7917294650927476	glew-populate-prefix/src/glew-populate-stamp/glew-populate-test	6f66cbab54d2a152
+10729	11129	7917294623794521	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/glew-populate-prefix/src/glew-populate-stamp/glew-populate-update	85a6f0286f8f511e
+11130	11644	7917294628882164	glew-populate-prefix/src/glew-populate-stamp/glew-populate-patch	fb07709c4ffc4aa
+11130	11644	7917294628882164	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/glew-populate-prefix/src/glew-populate-stamp/glew-populate-patch	fb07709c4ffc4aa
+11644	12312	7917294635667201	glew-populate-prefix/src/glew-populate-stamp/glew-populate-configure	13beebfac4256772
+12312	12756	7917294640053628	glew-populate-prefix/src/glew-populate-stamp/glew-populate-build	27aecce150e16c33
+12312	12756	7917294640053628	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/glew-populate-prefix/src/glew-populate-stamp/glew-populate-build	27aecce150e16c33
+12756	13121	7917294643134420	glew-populate-prefix/src/glew-populate-stamp/glew-populate-install	a744461786344709
+12756	13121	7917294643134420	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/glew-populate-prefix/src/glew-populate-stamp/glew-populate-install	a744461786344709
+13121	13849	7917294650927476	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/glew-populate-prefix/src/glew-populate-stamp/glew-populate-test	6f66cbab54d2a152
+13849	14354	7917294655927427	CMakeFiles/glew-populate-complete	3fc556e2603af2cb
+13849	14354	7917294655927427	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/CMakeFiles/glew-populate-complete	3fc556e2603af2cb
+13849	14354	7917294655927427	glew-populate-prefix/src/glew-populate-stamp/glew-populate-done	3fc556e2603af2cb
+13849	14354	7917294655927427	D:/Desktop/MapNavigator3D/out/build/x64-Debug/_deps/glew-subbuild/glew-populate-prefix/src/glew-populate-stamp/glew-populate-done	3fc556e2603af2cb
