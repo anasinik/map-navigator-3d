@@ -21,9 +21,26 @@
     <ClCompile Include="src\util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\IconRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Overlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Map3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="shaders\vertex_shader_3d.vert" />
+    <None Include="shaders\fragment_shader_3d.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\util.hpp">
@@ -32,5 +49,43 @@
     <ClInclude Include="include\stb_image.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Camera.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\IconRenderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Overlay.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Point.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TextRenderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Map3D.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\compas.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\novi-sad-map.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\pin.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\ruler.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="textures\walking_icon.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\arial.ttf" />
   </ItemGroup>
 </Project>
