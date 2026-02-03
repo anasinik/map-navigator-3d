@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>external/freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>external/glm.0.9.9.800/build/native/include;external/freetype/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,15 +130,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\IconRenderer.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Map3D.cpp" />
+    <ClCompile Include="src\Overlay.cpp" />
+    <ClCompile Include="src\TextRenderer.cpp" />
     <ClCompile Include="src\util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="shaders\fragment_shader_3d.frag" />
+    <None Include="shaders\vertex_shader_3d.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Camera.hpp" />
+    <ClInclude Include="include\IconRenderer.hpp" />
+    <ClInclude Include="include\Map3D.hpp" />
+    <ClInclude Include="include\Overlay.hpp" />
+    <ClInclude Include="include\Point.hpp" />
     <ClInclude Include="include\stb_image.hpp" />
+    <ClInclude Include="include\TextRenderer.hpp" />
     <ClInclude Include="include\util.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\compas.png" />
+    <Image Include="textures\novi-sad-map.jpg" />
+    <Image Include="textures\pin.png" />
+    <Image Include="textures\ruler.png" />
+    <Image Include="textures\walking_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\arial.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
