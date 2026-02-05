@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+﻿#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -8,6 +8,9 @@
 #include "../include/util.hpp"
 #include "../include/Camera.hpp"
 #include "../include/Map3D.hpp"
+#include "../include/Mesh.hpp"
+#include "../include/Model.hpp"
+#include "../include/Shader.hpp"
 
 int main() {
     if (!glfwInit()) return endProgram("GLFW init failed");
@@ -32,24 +35,24 @@ int main() {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 
-    unsigned int shader3D = createShader("shaders/vertex_shader_3d.vert",
-        "shaders/fragment_shader_3d.frag");
+    Shader mapShader("shaders/map_shader.vert", "shaders/map_shader.frag");
 
+    Shader modelShader("shaders/model_shader.vert", "shaders/model_shader.frag");
+
+    Model humanoid("models/humanoid.obj");
+    
     Map3D map("textures/novi-sad-map.jpg", 40.0f, 40.0f);
-
     Camera camera;
     camera.setPosition(0.0f, 15.0f, 15.0f);
 
-    double lastTime = glfwGetTime();
+    glm::vec3 playerPos(0.0f, 0.5f, 0.0f);
+    float playerRotation = 0.0f;
 
+    double lastTime = glfwGetTime();
     int fbW, fbH;
     glfwGetFramebufferSize(window, &fbW, &fbH);
-    std::cout << "Framebuffer: " << fbW << "x" << fbH << std::endl;
-    std::cout << "Aspect ratio: " << (float)fbW / fbH << std::endl;
-
 
     while (!glfwWindowShouldClose(window)) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -58,41 +61,70 @@ int main() {
         double now = glfwGetTime();
         float dt = float(now - lastTime);
         lastTime = now;
+        float speed = 5.0f * dt;
 
-        float speed = 10.0f * dt;
-        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-            camera.moveBy(0, 0, -speed);
-        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-            camera.moveBy(0, 0, speed);
-        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-            camera.moveBy(-speed, 0, 0);
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-            camera.moveBy(speed, 0, 0);
+        glm::vec3 moveDir(0.0f);
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            moveDir.z -= 1.0f;
+            playerRotation = 0.0f;
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            moveDir.z += 1.0f;
+            playerRotation = 180.0f;
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            moveDir.x -= 1.0f;
+            playerRotation = 90.0f;
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            moveDir.x += 1.0f;
+            playerRotation = -90.0f;
+        }
+
+        if (glm::length(moveDir) > 0.0f) {
+            moveDir = glm::normalize(moveDir);
+            playerPos += moveDir * speed;
+
+            playerPos.x = glm::clamp(playerPos.x, -20.0f, 20.0f);
+            playerPos.z = glm::clamp(playerPos.z, -20.0f, 20.0f);
+        }
+
+        camera.setPosition(playerPos.x, 15.0f, playerPos.z + 15.0f);
 
         glViewport(0, 0, fbW, fbH);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glUseProgram(shader3D);
-        glUniform1i(glGetUniformLocation(shader3D, "uTexture"), 0);
-
-        glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection = camera.getProjectionMatrix((float)fbW / fbH);
 
-        glUniformMatrix4fv(glGetUniformLocation(shader3D, "uModel"),
-            1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(glGetUniformLocation(shader3D, "uView"),
-            1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(shader3D, "uProjection"),
-            1, GL_FALSE, glm::value_ptr(projection));
+        mapShader.use();
+        mapShader.setMat4("uView", view);
+        mapShader.setMat4("uProjection", projection);
+        mapShader.setVec3("uLightPos", 0.0f, 20.0f, 0.0f);
+        mapShader.setVec3("uLightColor", 1.0f, 1.0f, 1.0f);
+        mapShader.setVec3("uViewPos", camera.getPosition());
 
-        // Svetlo
-        glUniform3f(glGetUniformLocation(shader3D, "uLightPos"), 0.0f, 20.0f, 0.0f);
-        glUniform3f(glGetUniformLocation(shader3D, "uLightColor"), 1.0f, 1.0f, 1.0f);
-        glUniform3fv(glGetUniformLocation(shader3D, "uViewPos"),
-            1, glm::value_ptr(camera.getPosition()));
+        glm::mat4 modelMap = glm::mat4(1.0f);
+        mapShader.setMat4("uModel", modelMap);
+        mapShader.setInt("uTexture", 0);
 
-        map.render(shader3D);
+        map.render(mapShader.ID);
+
+        modelShader.use();
+        modelShader.setMat4("uView", view);
+        modelShader.setMat4("uProjection", projection);
+        modelShader.setVec3("uLightPos", 0.0f, 20.0f, 0.0f);
+        modelShader.setVec3("uLightColor", 1.0f, 1.0f, 1.0f);
+        modelShader.setVec3("uViewPos", camera.getPosition());
+
+        glm::mat4 modelHuman = glm::mat4(1.0f);
+        modelHuman = glm::translate(modelHuman, playerPos);
+        modelHuman = glm::rotate(modelHuman, glm::radians(playerRotation),
+            glm::vec3(0.0f, 1.0f, 0.0f));
+        modelHuman = glm::scale(modelHuman, glm::vec3(0.01f));
+
+        modelShader.setMat4("uModel", modelHuman);
+        humanoid.Draw(modelShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

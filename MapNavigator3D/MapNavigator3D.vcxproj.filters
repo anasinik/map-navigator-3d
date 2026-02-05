@@ -39,8 +39,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="shaders\vertex_shader_3d.vert" />
-    <None Include="shaders\fragment_shader_3d.frag" />
+    <None Include="shaders\map_shader.vert" />
+    <None Include="shaders\map_shader.frag" />
+    <None Include="shaders\model_shader.vert" />
+    <None Include="shaders\model_shader.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\util.hpp">
@@ -65,6 +67,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Map3D.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Mesh.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Model.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
