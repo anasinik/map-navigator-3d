@@ -45,7 +45,6 @@ int main() {
     
     Map3D map("textures/novi-sad-map.jpg", 40.0f, 40.0f);
     Camera camera;
-    camera.setPosition(0.0f, 15.0f, 15.0f);
 
     glm::vec3 playerPos(0.0f, 0.5f, 0.0f);
     float playerRotation = 0.0f;
@@ -62,6 +61,20 @@ int main() {
         float dt = float(now - lastTime);
         lastTime = now;
         float speed = 5.0f * dt;
+
+        float camSpeed = 10.0f * dt;
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+            camera.moveXZ(0.0f, -camSpeed);
+
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+            camera.moveXZ(0.0f, camSpeed);
+
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+            camera.moveXZ(-camSpeed, 0.0f);
+
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+            camera.moveXZ(camSpeed, 0.0f);
+
 
         glm::vec3 moveDir(0.0f);
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -81,6 +94,12 @@ int main() {
             playerRotation = -90.0f;
         }
 
+        glm::vec3 camPos = camera.getPosition();
+        camPos.x = glm::clamp(camPos.x, -20.0f, 20.0f);
+        camPos.z = glm::clamp(camPos.z, -20.0f, 20.0f);
+        camera.setPosition(camPos.x, camPos.y, camPos.z);
+
+
         if (glm::length(moveDir) > 0.0f) {
             moveDir = glm::normalize(moveDir);
             playerPos += moveDir * speed;
@@ -89,8 +108,7 @@ int main() {
             playerPos.z = glm::clamp(playerPos.z, -20.0f, 20.0f);
         }
 
-        camera.setPosition(playerPos.x, 15.0f, playerPos.z + 15.0f);
-
+       
         glViewport(0, 0, fbW, fbH);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
