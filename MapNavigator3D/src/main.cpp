@@ -121,8 +121,9 @@ int main() {
         modelHuman = glm::translate(modelHuman, playerPos);
         modelHuman = glm::rotate(modelHuman, glm::radians(playerRotation),
             glm::vec3(0.0f, 1.0f, 0.0f));
-        modelHuman = glm::scale(modelHuman, glm::vec3(0.01f));
+        modelHuman = glm::scale(modelHuman, glm::vec3(0.015f));
 
+        glBindTexture(GL_TEXTURE_2D, 0);
         modelShader.setMat4("uModel", modelHuman);
         humanoid.Draw(modelShader);
 
