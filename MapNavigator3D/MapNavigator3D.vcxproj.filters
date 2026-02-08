@@ -110,7 +110,4 @@
   <ItemGroup>
     <Font Include="fonts\arial.ttf" />
   </ItemGroup>
-  <ItemGroup>
-    <Object Include="models\humanoid.obj" />
-  </ItemGroup>
 </Project>
