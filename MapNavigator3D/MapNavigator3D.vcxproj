@@ -140,13 +140,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="shaders\line_shader.frag" />
+    <None Include="shaders\line_shader.vert" />
     <None Include="shaders\map_shader.frag" />
     <None Include="shaders\map_shader.vert" />
     <None Include="shaders\model_shader.frag" />
     <None Include="shaders\model_shader.vert" />
+    <None Include="shaders\pin_shader.frag" />
+    <None Include="shaders\pin_shader.vert" />
+    <None Include="shaders\text.frag" />
+    <None Include="shaders\text.vert" />
+    <None Include="shaders\ui_overlay.frag" />
+    <None Include="shaders\ui_overlay.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Camera.hpp" />
+    <ClInclude Include="include\Constants.hpp" />
     <ClInclude Include="include\IconRenderer.hpp" />
     <ClInclude Include="include\Map3D.hpp" />
     <ClInclude Include="include\Mesh.hpp" />
@@ -167,6 +176,9 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="fonts\arial.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="models\humanoid.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
