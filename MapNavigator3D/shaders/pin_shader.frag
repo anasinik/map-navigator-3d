@@ -13,7 +13,7 @@ uniform float uEmissive;
 
 // Red lights from spheres
 uniform int uNumRedLights;
-uniform vec3 uRedLightPositions[10];
+uniform vec3 uRedLightPositions[100];
 
 void main() {
     // Ambient

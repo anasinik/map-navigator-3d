@@ -12,7 +12,7 @@ uniform vec3 uLightColor;
 uniform vec3 uViewPos;
 
 uniform int uNumRedLights;
-uniform vec3 uRedLightPositions[10];
+uniform vec3 uRedLightPositions[100];
 
 void main() {
     vec4 texColor = texture(uTexture, TexCoord);

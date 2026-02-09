@@ -273,7 +273,7 @@ int main() {
         mapShader.setVec3("uLightColor", 1.0f, 1.0f, 1.0f);
         mapShader.setVec3("uViewPos", camera.getPosition());
 
-        int numLights = glm::min(static_cast<int>(measurementPins.size()), 10);
+        int numLights = glm::min(static_cast<int>(measurementPins.size()), 100);
         mapShader.setInt("uNumRedLights", numLights);
 
         for (int i = 0; i < numLights; i++) {
@@ -324,14 +324,14 @@ int main() {
             overlay.drawText("MODE: WALKING", static_cast<float>(fbW - 400), 40.0f,
                 1, 1, 1, 1, fbW, fbH);
 
-            overlay.drawText(("DISTANCE: " + std::to_string(static_cast<int>(walkedDistance)) + " m").c_str(),
+            overlay.drawText(("DISTANCE: " + std::to_string(static_cast<int>(walkedDistance)) + " px").c_str(),
                 static_cast<float>(fbW - 400), 70.0f, 1, 1, 1, 1, fbW, fbH);
         }
         else {
             overlay.drawText("MODE: MEASUREMENT", static_cast<float>(fbW - 400), 40.0f,
                 1, 1, 1, 1, fbW, fbH);
 
-            overlay.drawText(("TOTAL: " + std::to_string(static_cast<int>(totalMeasuredDistance)) + " m").c_str(),
+            overlay.drawText(("TOTAL: " + std::to_string(static_cast<int>(totalMeasuredDistance)) + " px").c_str(),
                 static_cast<float>(fbW - 400), 70.0f, 1, 1, 1, 1, fbW, fbH);
 
             overlay.drawText(("PINS: " + std::to_string(measurementPins.size())).c_str(),

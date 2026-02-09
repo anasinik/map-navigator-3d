@@ -270,7 +270,7 @@ void Map3D::renderPins(unsigned int shaderProgram, const std::vector<Measurement
     glUniform3fv(viewPosLoc, 1, glm::value_ptr(viewPos));
 
     // Pass red light positions (from spheres)
-    int numLights = glm::min(static_cast<int>(pins.size()), 10); // Max 10 lights
+    int numLights = glm::min(static_cast<int>(pins.size()), 100); // Max 10 lights
     glUniform1i(numRedLightsLoc, numLights);
 
     for (int i = 0; i < numLights; i++) {
