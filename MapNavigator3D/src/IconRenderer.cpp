@@ -2,167 +2,152 @@
 #include "../include/util.hpp"
 #include <iostream>
 
-void IconRenderer::initVAO(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, float pinSize)
-{
-    float vertices[] = {
-        -pinSize,-pinSize, 0.0f,0.0f,
-         pinSize,-pinSize, 1.0f,0.0f,
-         pinSize, pinSize, 1.0f,1.0f,
-        -pinSize, pinSize, 0.0f,1.0f
-    };
-    unsigned int indices[] = { 0,1,2, 2,3,0 };
+void IconRenderer::ensureInitialized() {
+    if (initialized) return;
 
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glGenVertexArrays(1, &iconVAO);
+    glGenBuffers(1, &iconVBO);
+
+    glBindVertexArray(iconVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, iconVBO);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
+
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+
     glBindVertexArray(0);
+
+    initialized = true;
 }
 
-void IconRenderer::init(float pinSize) {
-    this->pinSize = pinSize;
-    initVAO(pinVAO, pinVBO, pinEBO, pinSize);
-    initVAO(walkVAO, walkVBO, walkEBO, pinSize);
-    initVAO(rulerVAO, rulerVBO, rulerEBO, pinSize);
+void IconRenderer::init(float pinSz) {
+    pinSize = pinSz;
+    ensureInitialized();
 }
 
-bool IconRenderer::loadTextures(const char* pinPath, const char* walkPath, const char* rulerPath) {
-    int texW, texH;
-    pinTexture = loadImageToTexture(pinPath, texW, texH);
-    walkTexture = loadImageToTexture(walkPath, texW, texH);
-    rulerTexture = loadImageToTexture(rulerPath, texW, texH);
-    return pinTexture && walkTexture && rulerTexture;
-}
-
-IconRenderer::~IconRenderer()
-{
-    if (pinTexture) glDeleteTextures(1, &pinTexture);
-    if (walkTexture) glDeleteTextures(1, &walkTexture);
+IconRenderer::~IconRenderer() {
+    if (iconVAO) glDeleteVertexArrays(1, &iconVAO);
+    if (iconVBO) glDeleteBuffers(1, &iconVBO);
+    if (walkingTexture) glDeleteTextures(1, &walkingTexture);
     if (rulerTexture) glDeleteTextures(1, &rulerTexture);
-
-    if (pinVAO) glDeleteVertexArrays(1, &pinVAO);
-    if (pinVBO) glDeleteBuffers(1, &pinVBO);
-    if (pinEBO) glDeleteBuffers(1, &pinEBO);
-
-    if (walkVAO) glDeleteVertexArrays(1, &walkVAO);
-    if (walkVBO) glDeleteBuffers(1, &walkVBO);
-    if (walkEBO) glDeleteBuffers(1, &walkEBO);
-
-    if (rulerVAO) glDeleteVertexArrays(1, &rulerVAO);
-    if (rulerVBO) glDeleteBuffers(1, &rulerVBO);
-    if (rulerEBO) glDeleteBuffers(1, &rulerEBO);
+    if (pinTexture) glDeleteTextures(1, &pinTexture);
 }
 
-void IconRenderer::drawPin(unsigned int shaderProgram)
-{
+bool IconRenderer::loadTextures(const char* pinPath, const char* walkingIconPath, const char* rulerIconPath) {
+    ensureInitialized();
+
+    bool allOk = true;
+    int w, h;
+
+    pinTexture = loadImageToTexture(pinPath, w, h);
+    if (!pinTexture) {
+        std::cerr << "Failed to load pin texture: " << pinPath << "\n";
+        allOk = false;
+    }
+    else {
+        std::cout << "Pin texture loaded: " << w << "x" << h << "\n";
+    }
+
+    walkingTexture = loadImageToTexture(walkingIconPath, w, h);
+    if (!walkingTexture) {
+        std::cerr << "Failed to load walking icon: " << walkingIconPath << "\n";
+        allOk = false;
+    }
+    else {
+        std::cout << "Walking icon loaded: " << w << "x" << h << "\n";
+    }
+
+    rulerTexture = loadImageToTexture(rulerIconPath, w, h);
+    if (!rulerTexture) {
+        std::cerr << "Failed to load ruler icon: " << rulerIconPath << "\n";
+        allOk = false;
+    }
+    else {
+        std::cout << "Ruler icon loaded: " << w << "x" << h << "\n";
+    }
+
+    return allOk;
+}
+
+void IconRenderer::drawIcon(unsigned int shaderProgram, GLuint texture,
+    float x, float y, float w, float h,
+    int screenW, int screenH) {
+    if (!texture) return;
+
+    float vertices[6][4] = {
+        { x,     y + h, 0.0f, 0.0f },  // top-left
+        { x,     y,     0.0f, 1.0f },  // bottom-left
+        { x + w, y,     1.0f, 1.0f },  // bottom-right
+
+        { x,     y + h, 0.0f, 0.0f },  // top-left
+        { x + w, y,     1.0f, 1.0f },  // bottom-right
+        { x + w, y + h, 1.0f, 0.0f }   // top-right
+    };
+
     glUseProgram(shaderProgram);
 
-    glUniform1i(glGetUniformLocation(shaderProgram, "uScreenIcon"), true);
-    glUniform1i(glGetUniformLocation(shaderProgram, "uIgnoreTransform"), true);
-    glUniform2f(glGetUniformLocation(shaderProgram, "uIconOffset"), 0.0f, 0.0f);
+    float left = 0.0f;
+    float right = (float)screenW;
+    float bottom = 0.0f;
+    float top = (float)screenH;
 
-    glBindVertexArray(pinVAO);
-    glBindTexture(GL_TEXTURE_2D, pinTexture);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    float projection[16] = {
+        2.0f / (right - left), 0.0f, 0.0f, 0.0f,
+        0.0f, 2.0f / (top - bottom), 0.0f, 0.0f,
+        0.0f, 0.0f, -1.0f, 0.0f,
+        -(right + left) / (right - left), -(top + bottom) / (top - bottom), 0.0f, 1.0f
+    };
 
-    glUniform1i(glGetUniformLocation(shaderProgram, "uScreenIcon"), false);
-    glUniform1i(glGetUniformLocation(shaderProgram, "uIgnoreTransform"), false);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, projection);
+    glUniform1i(glGetUniformLocation(shaderProgram, "iconTexture"), 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glBindVertexArray(iconVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, iconVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
-
 void IconRenderer::drawWalkIcon(unsigned int shaderProgram, int windowWidth, int windowHeight,
-    bool walkingMode,
-    float& outIconX_px, float& outIconY_px,
-    float& outIconWidth_px, float& outIconHeight_px)
-{
-    if (!walkingMode) return;
+    bool walkingMode, float& iconX_px, float& iconY_px,
+    float& iconWidth_px, float& iconHeight_px) {
+    float iconSize = 64.0f;
+    float margin = 20.0f;
 
-    glUseProgram(shaderProgram);
+    float x = windowWidth - iconSize - margin;
+    float y = windowHeight - iconSize - margin;
 
-    float cmLeft = 2.0f;
-    float cmTop = 3.0f;
-    float dpi = 96.0f;
+    if (walkingMode) {
+        drawIcon(shaderProgram, walkingTexture, x, y, iconSize, iconSize, windowWidth, windowHeight);
 
-    float pxLeft = cmLeft / 2.54f * dpi;
-    float pxTop = cmTop / 2.54f * dpi;
-
-    float iconWidth = 32.0f;
-    float iconHeight = 32.0f;
-
-    float x = -1.0f + pxLeft / windowWidth * 2.0f;
-    float y = 1.0f - pxTop / windowHeight * 2.0f;
-
-    outIconX_px = pxLeft - iconWidth / 2.0f;
-    outIconY_px = pxTop - iconHeight / 2.0f;
-    outIconWidth_px = iconWidth;
-    outIconHeight_px = iconHeight;
-
-    float padding = 5.0f;
-    outIconX_px -= padding;
-    outIconY_px -= padding;
-    outIconWidth_px += 2 * padding;
-    outIconHeight_px += 2 * padding;
-
-    glUniform1i(glGetUniformLocation(shaderProgram, "uScreenIcon"), true);
-    glUniform1i(glGetUniformLocation(shaderProgram, "uIgnoreTransform"), true);
-    glUniform2f(glGetUniformLocation(shaderProgram, "uIconOffset"), x, y);
-
-    glBindVertexArray(walkVAO);
-    glBindTexture(GL_TEXTURE_2D, walkTexture);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-    glUniform1i(glGetUniformLocation(shaderProgram, "uScreenIcon"), false);
-    glUniform1i(glGetUniformLocation(shaderProgram, "uIgnoreTransform"), false);
+        iconX_px = x;
+        iconY_px = y;
+        iconWidth_px = iconSize;
+        iconHeight_px = iconSize;
+    }
 }
 
 void IconRenderer::drawRulerIcon(unsigned int shaderProgram, int windowWidth, int windowHeight,
-    bool walkingMode,
-    float& outIconX_px, float& outIconY_px,
-    float& outIconWidth_px, float& outIconHeight_px)
-{
-    if (walkingMode) return;
+    bool walkingMode, float& iconX_px, float& iconY_px,
+    float& iconWidth_px, float& iconHeight_px) {
+    float iconSize = 64.0f;
+    float margin = 20.0f;
 
-    glUseProgram(shaderProgram);
+    float x = windowWidth - iconSize - margin;
+    float y = windowHeight - iconSize - margin;
 
-    float cmLeft = 2.0f;
-    float cmTop = 3.0f;
-    float dpi = 96.0f;
+    if (!walkingMode) {
+        drawIcon(shaderProgram, rulerTexture, x, y, iconSize, iconSize, windowWidth, windowHeight);
 
-    float pxLeft = cmLeft / 2.54f * dpi;
-    float pxTop = cmTop / 2.54f * dpi;
-
-    float iconWidth = 32.0f;
-    float iconHeight = 32.0f;
-
-    float x = -1.0f + pxLeft / windowWidth * 2.0f;
-    float y = 1.0f - pxTop / windowHeight * 2.0f;
-
-    outIconX_px = pxLeft - iconWidth / 2.0f;
-    outIconY_px = pxTop - iconHeight / 2.0f;
-    outIconWidth_px = iconWidth;
-    outIconHeight_px = iconHeight;
-
-    float padding = 5.0f;
-    outIconX_px -= padding;
-    outIconY_px -= padding;
-    outIconWidth_px += 2 * padding;
-    outIconHeight_px += 2 * padding;
-
-    glUniform1i(glGetUniformLocation(shaderProgram, "uScreenIcon"), true);
-    glUniform1i(glGetUniformLocation(shaderProgram, "uIgnoreTransform"), true);
-    glUniform2f(glGetUniformLocation(shaderProgram, "uIconOffset"), x, y);
-
-    glBindVertexArray(rulerVAO);
-    glBindTexture(GL_TEXTURE_2D, rulerTexture);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-    glUniform1i(glGetUniformLocation(shaderProgram, "uScreenIcon"), false);
-    glUniform1i(glGetUniformLocation(shaderProgram, "uIgnoreTransform"), false);
+        iconX_px = x;
+        iconY_px = y;
+        iconWidth_px = iconSize;
+        iconHeight_px = iconSize;
+    }
 }

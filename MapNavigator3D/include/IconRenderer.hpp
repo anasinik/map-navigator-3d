@@ -7,25 +7,29 @@ public:
     ~IconRenderer();
 
     void init(float pinSize);
-    bool loadTextures(const char* pinPath, const char* walkPath, const char* rulerPath);
+    bool loadTextures(const char* pinPath, const char* walkingIconPath, const char* rulerIconPath);
 
-    void drawPin(unsigned int shaderProgram);
     void drawWalkIcon(unsigned int shaderProgram, int windowWidth, int windowHeight,
-        bool walkingMode,
-        float& outIconX_px, float& outIconY_px,
-        float& outIconWidth_px, float& outIconHeight_px);
+        bool walkingMode, float& iconX_px, float& iconY_px,
+        float& iconWidth_px, float& iconHeight_px);
+
     void drawRulerIcon(unsigned int shaderProgram, int windowWidth, int windowHeight,
-        bool walkingMode,
-        float& outIconX_px, float& outIconY_px,
-        float& outIconWidth_px, float& outIconHeight_px);
+        bool walkingMode, float& iconX_px, float& iconY_px,
+        float& iconWidth_px, float& iconHeight_px);
 
 private:
-    void initVAO(unsigned int& VAO, unsigned int& VBO, unsigned int& EBO, float pinSize);
+    GLuint iconVAO = 0;
+    GLuint iconVBO = 0;
 
-    unsigned int pinTexture = 0, walkTexture = 0, rulerTexture = 0;
-    unsigned int pinVAO = 0, pinVBO = 0, pinEBO = 0;
-    unsigned int walkVAO = 0, walkVBO = 0, walkEBO = 0;
-    unsigned int rulerVAO = 0, rulerVBO = 0, rulerEBO = 0;
+    GLuint walkingTexture = 0;
+    GLuint rulerTexture = 0;
+    GLuint pinTexture = 0;
 
     float pinSize = 0.05f;
+    bool initialized = false;
+
+    void ensureInitialized();
+    void drawIcon(unsigned int shaderProgram, GLuint texture,
+        float x, float y, float w, float h,
+        int screenW, int screenH);
 };

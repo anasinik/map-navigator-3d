@@ -15,12 +15,14 @@
 #include "../include/Shader.hpp"
 #include "../include/Overlay.hpp"
 
-static bool mouseInsideIcon(double mx, double my, const Overlay& overlay)
+static bool mouseInsideIcon(double mx, double my, const Overlay& overlay, int windowHeight)
 {
+    float mouseY_OpenGL = windowHeight - my;
+
     return (mx >= overlay.iconX_px &&
         mx <= overlay.iconX_px + overlay.iconWidth_px &&
-        my >= overlay.iconY_px &&
-        my <= overlay.iconY_px + overlay.iconHeight_px);
+        mouseY_OpenGL >= overlay.iconY_px &&
+        mouseY_OpenGL <= overlay.iconY_px + overlay.iconHeight_px);
 }
 
 static void toggleWalkingMode(bool& walkingMode, Camera& camera, glm::vec3& playerPos)
@@ -116,7 +118,7 @@ int main() {
     Shader pinShader("shaders/pin_shader.vert", "shaders/pin_shader.frag");
     Shader lineShader("shaders/line_shader.vert", "shaders/line_shader.frag");
 
-    unsigned int uiShader = createShader("shaders/ui_overlay.vert", "shaders/ui_overlay.frag");
+    unsigned int iconShader = createShader("shaders/icon.vert", "shaders/icon.frag");
 
     Model humanoid("models/humanoid.obj");
 
@@ -124,6 +126,7 @@ int main() {
     Camera camera;
 
     Overlay overlay("textures/pin.png", "textures/walking_icon.png", "textures/ruler.png");
+    std::cout << "Overlay created successfully\n";
     overlay.loadFont("fonts/arial.ttf", 24);
 
     glm::vec3 playerPos(0.0f, 0.5f, 0.0f);
@@ -217,7 +220,7 @@ int main() {
 
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
             if (!clickHandled) {
-                if (mouseInsideIcon(mx, my, overlay)) {
+                if (mouseInsideIcon(mx, my, overlay, fbH)) { 
                     toggleWalkingMode(walkingMode, camera, playerPos);
                     overlay.setWalkingMode(walkingMode);
                 }
@@ -302,34 +305,35 @@ int main() {
 
         glDisable(GL_DEPTH_TEST);
 
-        overlay.drawWalkIcon(uiShader, fbW, fbH);
-        overlay.drawRulerIcon(uiShader, fbW, fbH);
+        overlay.drawWalkIcon(iconShader, fbW, fbH);
+        overlay.drawRulerIcon(iconShader, fbW, fbH);
 
-        overlay.drawFilledRect(20, 20, 350, 100, 0, 0, 0, 0.7f, fbW, fbH);
+        overlay.drawFilledRect(static_cast<float>(fbW - 420), static_cast<float>(fbH - 120),
+            400, 100, 0, 0, 0, 0.7f, fbW, fbH);
 
         if (walkingMode) {
-            overlay.drawText("MODE: WALKING", 40, static_cast<float>(fbH) - 80.0f, 1, 1, 1, 1, fbW, fbH);
+            overlay.drawText("MODE: WALKING", static_cast<float>(fbW - 400), 40.0f,
+                1, 1, 1, 1, fbW, fbH);
 
             overlay.drawText(("DISTANCE: " + std::to_string(static_cast<int>(walkedDistance)) + " m").c_str(),
-                40, static_cast<float>(fbH) - 50.0f, 1, 1, 1, 1, fbW, fbH);
+                static_cast<float>(fbW - 400), 70.0f, 1, 1, 1, 1, fbW, fbH);
         }
         else {
-            overlay.drawText("MODE: MEASUREMENT", 40, static_cast<float>(fbH) - 80.0f, 1, 1, 1, 1, fbW, fbH);
+            overlay.drawText("MODE: MEASUREMENT", static_cast<float>(fbW - 400), 40.0f,
+                1, 1, 1, 1, fbW, fbH);
 
             overlay.drawText(("TOTAL: " + std::to_string(static_cast<int>(totalMeasuredDistance)) + " m").c_str(),
-                40, static_cast<float>(fbH) - 50.0f, 1, 1, 1, 1, fbW, fbH);
+                static_cast<float>(fbW - 400), 70.0f, 1, 1, 1, 1, fbW, fbH);
 
             overlay.drawText(("PINS: " + std::to_string(measurementPins.size())).c_str(),
-                40, static_cast<float>(fbH) - 20.0f, 1, 1, 1, 1, fbW, fbH);
+                static_cast<float>(fbW - 400), 100.0f, 1, 1, 1, 1, fbW, fbH);
         }
 
-        overlay.drawFilledRect(static_cast<float>(fbW - 420), static_cast<float>(fbH - 60),
-            400, 50, 0, 0, 0, 0.7f, fbW, fbH);
+        overlay.drawFilledRect(20, 20, 350, 50, 0, 0, 0, 0.7f, fbW, fbH);
 
-        overlay.drawText("ANA SINIK, SV11/2022", static_cast<float>(fbW - 400), 45.0f, 1, 1, 1, 1, fbW, fbH);
+        overlay.drawText("ANA SINIK, SV11/2022", 40, static_cast<float>(fbH) - 45.0f, 1, 1, 1, 1, fbW, fbH);
 
         glEnable(GL_DEPTH_TEST);
-        
         glfwSwapBuffers(window);
         glfwPollEvents();
 

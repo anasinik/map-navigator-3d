@@ -51,6 +51,8 @@
     <None Include="shaders\line_shader.vert" />
     <None Include="shaders\text.frag" />
     <None Include="shaders\text.vert" />
+    <None Include="shaders\icon.vert" />
+    <None Include="shaders\icon.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\util.hpp">
