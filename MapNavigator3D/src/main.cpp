@@ -178,19 +178,19 @@ int main() {
 
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
                 moveDir.z -= 1.0f;
-                playerRotation = 0.0f;
+                playerRotation = 180.0f;
             }
             if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
                 moveDir.z += 1.0f;
-                playerRotation = 180.0f;
+                playerRotation = 0.0f;
             }
             if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
                 moveDir.x -= 1.0f;
-                playerRotation = 90.0f;
+                playerRotation = -90.0f; 
             }
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
                 moveDir.x += 1.0f;
-                playerRotation = -90.0f;
+                playerRotation = 90.0f;
             }
 
             if (glm::length(moveDir) > 0.0f) {
