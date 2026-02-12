@@ -79,7 +79,7 @@ static float recalculateTotalDistance(const std::vector<MeasurementPin>& pins)
     float total = 0.0f;
 
     if (pins.size() < 2) return 0.0f;
-    
+
     for (size_t i = 0; i < pins.size() - 1; i++) {
         total += glm::distance(pins[i].position, pins[i + 1].position);
     }
@@ -140,6 +140,9 @@ int main() {
     overlay.setWalkingMode(true);
     camera.setPosition(0.0f, 15.0f, 0.0f);
 
+    bool depthTestEnabled = true;
+    bool faceCullingEnabled = false;
+
     std::vector<MeasurementPin> measurementPins;
     float totalMeasuredDistance = 0.0f;
 
@@ -189,7 +192,7 @@ int main() {
             }
             if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
                 moveDir.x -= 1.0f;
-                playerRotation = -90.0f; 
+                playerRotation = -90.0f;
             }
             if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
                 moveDir.x += 1.0f;
@@ -217,13 +220,50 @@ int main() {
             rWasPressed = false;
         }
 
+        // ============================================================
+        // T - TOGGLE DEPTH TEST
+        static bool tWasPressed = false;
+        if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS && !tWasPressed) {
+            depthTestEnabled = !depthTestEnabled;
+            if (depthTestEnabled) {
+                glEnable(GL_DEPTH_TEST);
+            }
+            else {
+                glDisable(GL_DEPTH_TEST);
+            }
+            tWasPressed = true;
+            std::cout << "DEPTH TEST: " << (depthTestEnabled ? "ON" : "OFF") << std::endl;
+        }
+        else if (glfwGetKey(window, GLFW_KEY_T) == GLFW_RELEASE) {
+            tWasPressed = false;
+        }
+
+        // F - TOGGLE FACE CULLING
+        static bool fWasPressed = false;
+        if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !fWasPressed) {
+            faceCullingEnabled = !faceCullingEnabled;
+            if (faceCullingEnabled) {
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_FRONT); 
+            }
+            else {
+                glDisable(GL_CULL_FACE);
+            }
+            fWasPressed = true;
+            std::cout << "FACE CULLING: " << (faceCullingEnabled ? "ON" : "OFF") << std::endl;
+        }
+        else if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE) {
+            fWasPressed = false;
+        }
+        // ============================================================
+        
         // Mouse input
         double mx, my;
         glfwGetCursorPos(window, &mx, &my);
 
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
             if (!clickHandled) {
-                if (mouseInsideIcon(mx, my, overlay, fbH)) { 
+                if (mouseInsideIcon(mx, my, overlay, fbH)) {
                     toggleWalkingMode(walkingMode, camera, playerPos);
                     overlay.setWalkingMode(walkingMode);
                 }
@@ -275,7 +315,7 @@ int main() {
         mapShader.setVec3("uLightPos", 0.0f, 20.0f, 0.0f);
         mapShader.setVec3("uLightColor", 1.0f, 1.0f, 1.0f);
         mapShader.setVec3("uViewPos", camera.getPosition());
-        
+
         int numLights = walkingMode ? 0 : glm::min(static_cast<int>(measurementPins.size()), 100);
         mapShader.setInt("uNumRedLights", numLights);
 
@@ -292,6 +332,8 @@ int main() {
         map.render(mapShader.ID);
         // Player
         if (walkingMode) {
+            glDisable(GL_CULL_FACE);
+
             modelShader.use();
             modelShader.setMat4("uView", view);
             modelShader.setMat4("uProjection", projection);
@@ -307,6 +349,10 @@ int main() {
 
             modelShader.setMat4("uModel", modelHuman);
             humanoid.Draw(modelShader);
+
+            if (faceCullingEnabled) {
+                glEnable(GL_CULL_FACE);
+            }
         }
 
         if (!walkingMode && !measurementPins.empty()) {
@@ -318,6 +364,8 @@ int main() {
         }
 
         glDisable(GL_DEPTH_TEST);
+
+        glDisable(GL_CULL_FACE);
 
         overlay.drawWalkIcon(iconShader, fbW, fbH);
         overlay.drawRulerIcon(iconShader, fbW, fbH);
@@ -347,7 +395,13 @@ int main() {
 
         overlay.drawText("ANA SINIK, SV11/2022", 40, static_cast<float>(fbH) - 45.0f, 1, 1, 1, 1, fbW, fbH);
 
-        glEnable(GL_DEPTH_TEST);
+        if (depthTestEnabled) {
+            glEnable(GL_DEPTH_TEST);
+        }
+        if (faceCullingEnabled) {
+            glEnable(GL_CULL_FACE);
+        }
+
         glfwSwapBuffers(window);
         glfwPollEvents();
 
