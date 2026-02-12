@@ -77,6 +77,9 @@ static int findPinAtPosition(const std::vector<MeasurementPin>& pins, const glm:
 static float recalculateTotalDistance(const std::vector<MeasurementPin>& pins)
 {
     float total = 0.0f;
+
+    if (pins.size() < 2) return 0.0f;
+    
     for (size_t i = 0; i < pins.size() - 1; i++) {
         total += glm::distance(pins[i].position, pins[i + 1].position);
     }
