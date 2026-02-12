@@ -272,14 +272,16 @@ int main() {
         mapShader.setVec3("uLightPos", 0.0f, 20.0f, 0.0f);
         mapShader.setVec3("uLightColor", 1.0f, 1.0f, 1.0f);
         mapShader.setVec3("uViewPos", camera.getPosition());
-
-        int numLights = glm::min(static_cast<int>(measurementPins.size()), 100);
+        
+        int numLights = walkingMode ? 0 : glm::min(static_cast<int>(measurementPins.size()), 100);
         mapShader.setInt("uNumRedLights", numLights);
 
-        for (int i = 0; i < numLights; i++) {
-            glm::vec3 lightPos = measurementPins[i].position + glm::vec3(0.0f, 2.0f, 0.0f);
-            std::string uniformName = "uRedLightPositions[" + std::to_string(i) + "]";
-            mapShader.setVec3(uniformName.c_str(), lightPos);
+        if (!walkingMode) {
+            for (int i = 0; i < numLights; i++) {
+                glm::vec3 lightPos = measurementPins[i].position + glm::vec3(0.0f, 2.0f, 0.0f);
+                std::string uniformName = "uRedLightPositions[" + std::to_string(i) + "]";
+                mapShader.setVec3(uniformName.c_str(), lightPos);
+            }
         }
 
         glm::mat4 modelMap = glm::mat4(1.0f);
